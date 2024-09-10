@@ -54,8 +54,10 @@ class _UserInfoState extends ConsumerState<UserInfoScreen> {
           uid: currentUser.uid,
           imageUrl: imgUrl);
 
-      ref.read(userProvider.notifier).add(user);
+      ref.read(userProvider.notifier).addUser(user);
+
       navigatorKey.currentState?.pushNamed('gallery');
+      
       FirestoreService().addUser({
         'name': _enteredName,
         'email': currentUser.email,

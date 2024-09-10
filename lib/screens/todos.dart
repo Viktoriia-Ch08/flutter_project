@@ -1,61 +1,72 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/models/user_model.dart';
+import 'package:flutter_project/provider/todos.dart';
 import 'package:flutter_project/provider/user.dart';
 import 'package:flutter_project/screens/auth.dart';
+import 'package:flutter_project/screens/new_todo.dart';
+import 'package:flutter_project/screens/profile.dart';
 import 'package:flutter_project/services/firestore_service.dart';
-import 'package:flutter_project/widgets/gallery_list.dart';
-import 'package:flutter_project/widgets/user_data.dart';
+import 'package:flutter_project/widgets/todos/todos_list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GalleryScreen extends ConsumerStatefulWidget {
-  const GalleryScreen({super.key});
+class TodosScreen extends ConsumerStatefulWidget {
+  const TodosScreen({super.key});
 
   @override
-  ConsumerState<GalleryScreen> createState() {
-    return _GalleryScreenState();
+  ConsumerState<TodosScreen> createState() {
+    return _TodosScreenState();
   }
 }
 
-class _GalleryScreenState extends ConsumerState<GalleryScreen> {
+class _TodosScreenState extends ConsumerState<TodosScreen> {
   bool isLoading = false;
+  User? currentUser;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-
+    currentUser = FirebaseAuth.instance.currentUser;
     _setUserData();
   }
 
   void _setUserData() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-
     final storageUser = await FirestoreService().getUser(currentUser!.uid);
 
     if (storageUser == null) return;
 
-    ref.read(userProvider.notifier).add(UserModel(
-        name: storageUser['name'],
-        email: storageUser['email'],
-        uid: storageUser['uid'],
-        imageUrl: storageUser['imageUrl']));
+    ref.read(userProvider.notifier).getUser(storageUser);
   }
 
-  void _logout() {
+  void _logout() async {
     setState(() {
       isLoading = true;
     });
-
-    FirebaseAuth.instance.signOut();
-    ref.read(userProvider.notifier).delete();
+    await FirebaseAuth.instance.signOut();
+    ref.read(userProvider.notifier).logout();
+    ref.read(todosProvider.notifier).logout();
 
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (ctx) => const AuthScreen()));
   }
 
+  void _addTodo() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => NewTodo()));
+  }
+
+  void _selectPage(i) {
+    setState(() {
+      _selectedIndex = i;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
+    Widget content = const TodosList();
+
+    if (_selectedIndex == 1) {
+      content = const Profile();
+    }
 
     return isLoading
         ? const Center(child: CircularProgressIndicator())
@@ -65,14 +76,14 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
               automaticallyImplyLeading: false,
               backgroundColor:
                   Theme.of(context).colorScheme.onSecondaryContainer,
-              title: Text('Gallery',
+              title: Text(_selectedIndex == 0 ? 'Todo List' : 'Profile',
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
                       .copyWith(color: Colors.white70)),
               actions: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: _addTodo,
                     icon: const Icon(
                       Icons.add,
                       color: Colors.white70,
@@ -85,16 +96,15 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
                     ))
               ],
             ),
-            body: Container(
-              child: Column(
-                children: [
-                  if (user.name != null) const UserData(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const GalleryList(),
-                ],
-              ),
-            ));
+            bottomNavigationBar: BottomNavigationBar(
+                onTap: (i) => _selectPage(i),
+                currentIndex: _selectedIndex,
+                items: const [
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.list_outlined), label: 'Todo List'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.person_4_outlined), label: 'Profile'),
+                ]),
+            body: content);
   }
 }

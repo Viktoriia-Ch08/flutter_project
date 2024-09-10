@@ -52,8 +52,10 @@ class _AuthScreenState extends State<AuthScreen> {
         isLogin = true;
       });
       if (err.code == 'email-already-in-use') {
-        Toast(text: const Text('Email already in use. Login!')).showError();
+        Toast(text: 'Email already in use. Login!').showError();
+        return;
       }
+      Toast(text: err.message!).showError();
     }
   }
 

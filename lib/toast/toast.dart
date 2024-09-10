@@ -4,11 +4,11 @@ import 'package:toastification/toastification.dart';
 class Toast {
   Toast({required this.text});
 
-  final Widget text;
+  final String text;
 
   void showError() {
     toastification.show(
-        title: text,
+        title: Text(text),
         autoCloseDuration: const Duration(seconds: 5),
         borderSide: const BorderSide(color: Colors.transparent),
         backgroundColor: Colors.redAccent.withOpacity(0.5),

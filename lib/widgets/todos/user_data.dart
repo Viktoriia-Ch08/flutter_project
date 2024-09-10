@@ -30,8 +30,16 @@ class _UserDataState extends ConsumerState<UserData> {
           const SizedBox(
             height: 20,
           ),
-          Text(user.name!, style: Theme.of(context).textTheme.titleLarge),
-          Text(user.email!, style: Theme.of(context).textTheme.bodySmall)
+          Text(user.name!,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Colors.white70)),
+          Text(user.email!,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(color: Colors.white70))
         ],
       ),
     );
