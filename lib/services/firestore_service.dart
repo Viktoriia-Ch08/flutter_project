@@ -16,6 +16,10 @@ class FirestoreService {
     return user.data();
   }
 
+  void updateAvatar(imageUrl, uid) async {
+    await db.collection('users').doc(uid).update({'imageUrl': imageUrl});
+  }
+
   void addTodo(todo, uid) async {
     await db.collection('todos').doc(uid).set(todo);
   }

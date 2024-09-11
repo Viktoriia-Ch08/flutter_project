@@ -20,6 +20,10 @@ class UserNotifier extends StateNotifier<UserModel> {
   void logout() {
     state = UserModel(name: null, email: null, uid: null, imageUrl: null);
   }
+
+  void updateAvatar(UserModel user) {
+    state = user;
+  }
 }
 
 final userProvider =

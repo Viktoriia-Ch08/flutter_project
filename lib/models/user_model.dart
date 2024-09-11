@@ -8,5 +8,5 @@ class UserModel {
   final String? name;
   final String? email;
   final String? uid;
-  final String? imageUrl;
+  String? imageUrl;
 }
