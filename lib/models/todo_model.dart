@@ -17,7 +17,7 @@ final statusData = [
 ];
 
 class TodoModel {
-  const TodoModel(
+  TodoModel(
       {required this.title,
       required this.description,
       required this.imageUrl,
@@ -31,7 +31,7 @@ class TodoModel {
   final String? description;
   final String? imageUrl;
   final String? status;
-  final bool isDone;
+  bool isDone;
   final String userId;
   final String? uid;
   final Timestamp createdAt;

@@ -120,6 +120,23 @@ class _TodosListState extends ConsumerState<TodosList> {
                             width: 20,
                             height: 20,
                           )),
+                      Positioned(
+                          top: 60,
+                          right: 20,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              width: 20,
+                              height: 20,
+                              child: Icon(
+                                sortedTodos[i].isDone
+                                    ? Icons.done
+                                    : Icons.work_history_outlined,
+                                color: Colors.white,
+                              )
+
+                          )),
                     ],
                   )),
             )),

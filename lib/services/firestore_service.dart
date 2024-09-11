@@ -47,4 +47,8 @@ class FirestoreService {
   void updateTodo(todo, uid) async {
     await db.collection('todos').doc(uid).update(todo);
   }
+
+  void updateIsDone(status, uid) async {
+    await db.collection('todos').doc(uid).update({'isDone': status});
+  }
 }

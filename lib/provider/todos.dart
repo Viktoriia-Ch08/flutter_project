@@ -28,6 +28,18 @@ class TodosNotifier extends StateNotifier<List<TodoModel>> {
       }),
     ];
   }
+
+  void updateIsDone(String uid) {
+    state = [
+      ...state.map((el) {
+        if (el.uid == uid) {
+          el.isDone = !el.isDone;
+          return el;
+        }
+        return el;
+      }),
+    ];
+  }
 }
 
 final todosProvider = StateNotifierProvider<TodosNotifier, List<TodoModel>>(

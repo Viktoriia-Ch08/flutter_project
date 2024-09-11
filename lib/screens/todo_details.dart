@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/models/todo_model.dart';
 import 'package:flutter_project/provider/todos.dart';
 import 'package:flutter_project/screens/new_todo.dart';
+import 'package:flutter_project/services/firestore_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TodoDetails extends ConsumerStatefulWidget {
@@ -37,6 +38,12 @@ class _TodoDetailsState extends ConsumerState<TodoDetails> {
   void _editTodo(TodoModel todo) {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (ctx) => NewTodo(todo: todo)));
+  }
+
+  void _updateIsDone(bool isDone, String uid) {
+    ref.read(todosProvider.notifier).updateIsDone(uid);
+
+    FirestoreService().updateIsDone(isDone, uid);
   }
 
   @override
@@ -114,6 +121,11 @@ class _TodoDetailsState extends ConsumerState<TodoDetails> {
                                 .bodyLarge!
                                 .copyWith(color: Colors.white70))
                       ],
+                    ),
+                    Switch(
+                      value: todo.isDone,
+                      onChanged: (isChecked) =>
+                          _updateIsDone(isChecked, todo.uid!),
                     )
                   ],
                 )),
