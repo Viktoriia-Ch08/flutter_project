@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/provider/todos.dart';
 import 'package:flutter_project/provider/user.dart';
 import 'package:flutter_project/screens/auth.dart';
+import 'package:flutter_project/screens/filters.dart';
 import 'package:flutter_project/screens/new_todo.dart';
 import 'package:flutter_project/screens/profile.dart';
 import 'package:flutter_project/services/firestore_service.dart';
@@ -74,6 +75,17 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
             backgroundColor: Theme.of(context).colorScheme.primary,
             appBar: AppBar(
               automaticallyImplyLeading: false,
+              leading: Builder(
+                builder: (context) => IconButton(
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.white70,
+                  ),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                ),
+              ),
               backgroundColor:
                   Theme.of(context).colorScheme.onSecondaryContainer,
               title: Text(_selectedIndex == 0 ? 'Todo List' : 'Profile',
@@ -105,6 +117,54 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                   BottomNavigationBarItem(
                       icon: Icon(Icons.person_4_outlined), label: 'Profile'),
                 ]),
+            drawer: Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                      Theme.of(context).colorScheme.primary.withOpacity(0.3)
+                    ])),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.list_alt,
+                          size: 40,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          'Todos',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        )
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.list),
+                    title: const Text('Todos'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (ctx) => const TodosScreen()));
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: const Text('Filters'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => const FiltersScreen()));
+                    },
+                  ),
+                ],
+              ),
+            ),
             body: content);
   }
 }

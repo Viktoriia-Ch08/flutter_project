@@ -34,7 +34,8 @@ class FirestoreService {
           status: doc.get('status'),
           userId: doc.get('userId'),
           isDone: doc.get('isDone'),
-          uid: doc.get('uid')));
+          uid: doc.get('uid'),
+          createdAt: doc.get('createdAt')));
     }
     return allTodos;
   }

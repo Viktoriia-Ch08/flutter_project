@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 enum StatusTitle { high, medium, low }
@@ -16,14 +17,15 @@ final statusData = [
 ];
 
 class TodoModel {
-  TodoModel(
+  const TodoModel(
       {required this.title,
       required this.description,
       required this.imageUrl,
       required this.status,
       this.isDone = false,
       required this.userId,
-      required this.uid});
+      required this.uid,
+      required this.createdAt});
 
   final String? title;
   final String? description;
@@ -32,4 +34,5 @@ class TodoModel {
   final bool isDone;
   final String userId;
   final String? uid;
+  final Timestamp createdAt;
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -74,43 +75,11 @@ class _NewTodoFormState extends ConsumerState<NewTodoForm> {
             : _networkImage;
 
         if (_isEditing) {
-          ref.read(todosProvider.notifier).updateTodo(TodoModel(
-              userId: currentUser!.uid,
-              title: _enteredTitle,
-              description: _enteredDescr,
-              imageUrl: imageUrl,
-              status: _selectedStatus,
-              uid: widget.todo!.uid));
-          Navigator.of(context).pop();
-
-          FirestoreService().updateTodo({
-            'title': _enteredTitle,
-            'description': _enteredDescr,
-            'status': _selectedStatus,
-            'imageUrl': imageUrl,
-          }, widget.todo!.uid);
+          _updateTodo(imageUrl);
           return;
         }
 
-        ref.read(todosProvider.notifier).addTodo(TodoModel(
-            userId: currentUser!.uid,
-            title: _enteredTitle,
-            description: _enteredDescr,
-            imageUrl: imageUrl,
-            status: _selectedStatus,
-            uid: uid));
-
-        Navigator.of(context).pop();
-
-        FirestoreService().addTodo({
-          'userId': currentUser!.uid,
-          'title': _enteredTitle,
-          'description': _enteredDescr,
-          'status': _selectedStatus,
-          'imageUrl': imageUrl,
-          'isDone': false,
-          'uid': uid,
-        }, uid);
+        _addTodo(imageUrl, uid);
       } on FirebaseException catch (err) {
         setState(() {
           isLoading = false;
@@ -118,6 +87,50 @@ class _NewTodoFormState extends ConsumerState<NewTodoForm> {
         Toast(text: err.message!);
       }
     }
+  }
+
+  void _addTodo(imageUrl, uid) {
+    ref.read(todosProvider.notifier).addTodo(TodoModel(
+        userId: currentUser!.uid,
+        title: _enteredTitle,
+        description: _enteredDescr,
+        imageUrl: imageUrl,
+        status: _selectedStatus,
+        createdAt: Timestamp.now(),
+        uid: uid));
+
+    Navigator.of(context).pop();
+
+    FirestoreService().addTodo({
+      'userId': currentUser!.uid,
+      'title': _enteredTitle,
+      'description': _enteredDescr,
+      'status': _selectedStatus,
+      'imageUrl': imageUrl,
+      'isDone': false,
+      'uid': uid,
+      'createdAt': Timestamp.now()
+    }, uid);
+  }
+
+  void _updateTodo(imageUrl) {
+    ref.read(todosProvider.notifier).updateTodo(TodoModel(
+        userId: currentUser!.uid,
+        title: _enteredTitle,
+        description: _enteredDescr,
+        imageUrl: imageUrl,
+        status: _selectedStatus,
+        uid: widget.todo!.uid,
+        createdAt: Timestamp.now()));
+    Navigator.of(context).pop();
+
+    FirestoreService().updateTodo({
+      'title': _enteredTitle,
+      'description': _enteredDescr,
+      'status': _selectedStatus,
+      'imageUrl': imageUrl,
+      'createdAt': Timestamp.now()
+    }, widget.todo!.uid);
   }
 
   void _pickImage() async {
@@ -141,7 +154,6 @@ class _NewTodoFormState extends ConsumerState<NewTodoForm> {
 
   @override
   Widget build(BuildContext context) {
-    
     return SingleChildScrollView(
       child: Form(
           key: _formKey,
@@ -155,15 +167,15 @@ class _NewTodoFormState extends ConsumerState<NewTodoForm> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // if (_chosenImage != null)
-                      Image(
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                        image: _networkImage != null && _chosenImage == null
-                            ? NetworkImage(_networkImage!)
-                            : FileImage(_chosenImage!),
-                      ),
+                      if (_chosenImage != null || _networkImage != null)
+                        Image(
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                          image: _networkImage != null && _chosenImage == null
+                              ? NetworkImage(_networkImage!)
+                              : FileImage(_chosenImage!),
+                        ),
                       Positioned(
                         child: IconButton(
                             iconSize: 40,

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/models/todo_model.dart';
+import 'package:flutter_project/provider/filters.dart';
 import 'package:flutter_project/provider/todos.dart';
 import 'package:flutter_project/screens/todo_details.dart';
 import 'package:flutter_project/services/firestore_service.dart';
@@ -28,9 +29,7 @@ class _TodosListState extends ConsumerState<TodosList> {
 
   void _setTodos() async {
     final storageTodos = await FirestoreService().getTodos(currentUser!.uid);
-
     if (storageTodos.isEmpty) return;
-
     ref.read(todosProvider.notifier).getTodos(storageTodos);
   }
 
@@ -58,25 +57,26 @@ class _TodosListState extends ConsumerState<TodosList> {
 
   @override
   Widget build(BuildContext context) {
-    final todos = ref.watch(todosProvider);
+    final sortedTodos = ref.watch(filteredTodosProvider);
+
     Widget content = const Center(child: Text('No todos found'));
 
-    if (todos.isNotEmpty) {
+    if (sortedTodos.isNotEmpty) {
       content = GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
         ),
         padding: const EdgeInsets.all(10),
-        itemCount: todos.length,
+        itemCount: sortedTodos.length,
         itemBuilder: ((ctx, i) => GestureDetector(
               onTap: () {
-                _openTodoDetails(todos[i].uid);
+                _openTodoDetails(sortedTodos[i].uid);
               },
               child: Dismissible(
                   onDismissed: (direction) {
-                    _deleteTodo(todos[i].uid!, i);
+                    _deleteTodo(sortedTodos[i].uid!, i);
                   },
-                  key: ValueKey(todos[i].uid),
+                  key: ValueKey(sortedTodos[i].uid),
                   child: Stack(
                     children: [
                       Container(
@@ -89,13 +89,13 @@ class _TodosListState extends ConsumerState<TodosList> {
                                     blurRadius: 3, spreadRadius: 1)),
                             borderRadius: BorderRadius.circular(15),
                             image: DecorationImage(
-                              image: NetworkImage(todos[i].imageUrl!),
+                              image: NetworkImage(sortedTodos[i].imageUrl!),
                               fit: BoxFit.cover,
                             )),
                         child: ListTile(
                           title: Text(
                             textAlign: TextAlign.center,
-                            todos[i].title!,
+                            sortedTodos[i].title!,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge!
@@ -103,7 +103,7 @@ class _TodosListState extends ConsumerState<TodosList> {
                           ),
                           subtitle: Text(
                             textAlign: TextAlign.center,
-                            todos[i].description!,
+                            sortedTodos[i].description!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(color: Colors.white),
@@ -116,7 +116,7 @@ class _TodosListState extends ConsumerState<TodosList> {
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                color: _setColor(todos[i].status!)),
+                                color: _setColor(sortedTodos[i].status!)),
                             width: 20,
                             height: 20,
                           )),
