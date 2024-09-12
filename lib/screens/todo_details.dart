@@ -145,12 +145,16 @@ class _TodoDetailsState extends ConsumerState<TodoDetails> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Text(
+                  Expanded(
+                      child: SingleChildScrollView(
+                    child: Text(
                     todo.description!,
                     maxLines: lines,
                     overflow: lines == null ? null : TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+                    ),
+                  )),
+                  
                   const SizedBox(
                     height: 10,
                   ),

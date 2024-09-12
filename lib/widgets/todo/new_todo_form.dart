@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_project/models/todo_model.dart';
 import 'package:flutter_project/provider/todos.dart';
@@ -227,6 +228,9 @@ class _NewTodoFormState extends ConsumerState<NewTodoForm> {
                           minLines: 5,
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(2000)
+                          ],
                           style: const TextStyle(
                               color: Colors.white, overflow: TextOverflow.clip),
                           decoration: const InputDecoration(
