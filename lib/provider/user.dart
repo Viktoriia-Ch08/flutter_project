@@ -6,15 +6,11 @@ class UserNotifier extends StateNotifier<UserModel> {
       : super(UserModel(name: null, email: null, uid: null, imageUrl: null));
 
   void getUser(Map<String, dynamic> user) {
-    state = UserModel(
-        name: user['name'],
-        email: user['email'],
-        uid: user['uid'],
-        imageUrl: user['imageUrl']);
+    state = UserModel.fromJSON(user);
   }
 
-  void addUser(UserModel user) {
-    state = user;
+  void addUser(user) {
+    state = UserModel.fromJSON(user);
   }
 
   void logout() {

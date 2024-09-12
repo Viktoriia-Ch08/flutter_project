@@ -91,47 +91,38 @@ class _NewTodoFormState extends ConsumerState<NewTodoForm> {
   }
 
   void _addTodo(imageUrl, uid) {
-    ref.read(todosProvider.notifier).addTodo(TodoModel(
+    final newTodo = TodoModel(
         userId: currentUser!.uid,
         title: _enteredTitle,
         description: _enteredDescr,
         imageUrl: imageUrl,
         status: _selectedStatus,
+        isDone: false,
         createdAt: Timestamp.now(),
-        uid: uid));
+        uid: uid);
+
+    ref.read(todosProvider.notifier).addTodo(newTodo);
 
     Navigator.of(context).pop();
 
-    FirestoreService().addTodo({
-      'userId': currentUser!.uid,
-      'title': _enteredTitle,
-      'description': _enteredDescr,
-      'status': _selectedStatus,
-      'imageUrl': imageUrl,
-      'isDone': false,
-      'uid': uid,
-      'createdAt': Timestamp.now()
-    }, uid);
+    FirestoreService().addTodo(newTodo.toMap(), uid);
   }
 
   void _updateTodo(imageUrl) {
-    ref.read(todosProvider.notifier).updateTodo(TodoModel(
-        userId: currentUser!.uid,
-        title: _enteredTitle,
-        description: _enteredDescr,
-        imageUrl: imageUrl,
-        status: _selectedStatus,
-        uid: widget.todo!.uid,
-        createdAt: Timestamp.now()));
+    final updatedTodo = TodoModel(
+            userId: currentUser!.uid,
+            title: _enteredTitle,
+            description: _enteredDescr,
+            imageUrl: imageUrl,
+            status: _selectedStatus,
+            uid: widget.todo!.uid,
+            createdAt: Timestamp.now())
+        .copyWith();
+
+    ref.read(todosProvider.notifier).updateTodo(updatedTodo);
     Navigator.of(context).pop();
 
-    FirestoreService().updateTodo({
-      'title': _enteredTitle,
-      'description': _enteredDescr,
-      'status': _selectedStatus,
-      'imageUrl': imageUrl,
-      'createdAt': Timestamp.now()
-    }, widget.todo!.uid);
+    FirestoreService().updateTodo(updatedTodo.toMap(), widget.todo!.uid);
   }
 
   void _pickImage() async {

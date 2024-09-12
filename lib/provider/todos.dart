@@ -4,12 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class TodosNotifier extends StateNotifier<List<TodoModel>> {
   TodosNotifier() : super([]);
 
-  void addTodo(TodoModel todo) {
+  void addTodo(todo) {
+    // final newTodo = TodoModel.fromJSON(todo);
+    print('newTodo 2');
+    // print(newTodo);
     state = [...state, todo];
   }
 
-  void getTodos(List<TodoModel> todos) {
-    state = [...todos];
+  void getTodos(storageTodos) {
+    state = TodosList.fromJSON(storageTodos).todos ?? [];
   }
 
   void logout() {

@@ -56,7 +56,8 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   void _setTodos() async {
     final storageTodos = await FirestoreService().getTodos(currentUser!.uid);
-    if (storageTodos.isEmpty) return;
+    
+    if (storageTodos.docs.isEmpty) return;
 
     ref.read(todosProvider.notifier).getTodos(storageTodos);
   }
